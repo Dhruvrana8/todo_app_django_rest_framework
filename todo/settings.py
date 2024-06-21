@@ -40,7 +40,8 @@ INSTALLED_APPS = [
 ]
 
 EXTERNAL_APPS =[
-    'rest_framework'
+    'rest_framework',
+    'todo_api'
 ]
 INSTALLED_APPS += EXTERNAL_APPS
 
