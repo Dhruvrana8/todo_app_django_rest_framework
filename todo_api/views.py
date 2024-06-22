@@ -31,12 +31,16 @@ class TodoApiView(APIView):
             return Response(
                 {"error":"The Id is required field "}
             )
-        
         todo = get_object_or_404(TODO, id=id)
         serializer = TodoSerializer(todo, data=data, partial=True)  # partial=True allows partial updates
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self,request,id=None):
+        todo = get_object_or_404(TODO, id=id)
+        todo.delete()
+        return Response({"message":f'The task {id} is deleted'},status=status.HTTP_200_OK)
     
         
