@@ -11,7 +11,8 @@ from .pagination import CustomPageNumberPagination
 
 class TodoApiView(APIView):
     def get(self,request):
-        todo = TODO.objects.all()
+        # We need to filter the data for the soft deleted task
+        todo = TODO.objects.filter(is_deleted=False)
         paginator = CustomPageNumberPagination()
         paginated_todo = paginator.paginate_queryset(todo, request)
         serializedData = TodoSerializer(paginated_todo, many=True)
@@ -28,9 +29,7 @@ class TodoApiView(APIView):
         data = request.data
         id = data.get('id', None)
         if not id:
-            return Response(
-                {"error":"The Id is required field "}
-            )
+            return Response({"error":"The ID is required field "})
         todo = get_object_or_404(TODO, id=id)
         serializer = TodoSerializer(todo, data=data, partial=True)  # partial=True allows partial updates
         if serializer.is_valid():
@@ -38,6 +37,7 @@ class TodoApiView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    # This is only used to hard delete the Task
     def delete(self,request,id=None):
         todo = get_object_or_404(TODO, id=id)
         todo.delete()
