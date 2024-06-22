@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-EXTERNAL_APPS =[
+EXTERNAL_APPS = [
     'rest_framework',
     'todo_api'
 ]
