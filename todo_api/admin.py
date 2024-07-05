@@ -7,7 +7,8 @@ from .models import TODO
 class TodoAdmin(admin.ModelAdmin):
     # This is the list of fields we want to display on the django admin
     # The sequence of field will be same on the django admin
-    list_display = ['pk', 'task', 'created_at', 'is_completed']
+    list_display = ['pk', 'task_title', 'task_description', 'created_at',
+                    'is_completed']
 
     def get_actions(self, request):
         actions = super().get_actions(request)
