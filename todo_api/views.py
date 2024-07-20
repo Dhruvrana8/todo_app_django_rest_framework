@@ -12,8 +12,10 @@ from .pagination import CustomPageNumberPagination
 
 class TodoApiView(APIView):
     def get(self, request):
-        # We need to filter the data for the soft deleted task
+        taskId = request.query_params.get('id')
         todo = TODO.objects.filter(is_deleted=False)
+        if taskId:
+            todo = todo.filter(id=taskId)
         paginator = CustomPageNumberPagination()
         paginated_todo = paginator.paginate_queryset(todo, request)
         serializedData = TodoSerializer(paginated_todo, many=True)
