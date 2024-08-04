@@ -7,19 +7,35 @@ from .models import TODO
 from .serializer import TodoSerializer
 from .pagination import CustomPageNumberPagination
 
-# Create your views here.
+# constants
+STATUS_CODE = ['COMPLETED', 'INCOMPLETE']
 
 
 class TodoApiView(APIView):
-    def get(self, request):
-        taskId = request.query_params.get('id')
-        todo = TODO.objects.filter(is_deleted=False)
-        if taskId:
-            todo = todo.filter(id=taskId)
+    def get(self, request, id=None):
+        task_id = request.query_params.get('id')
+        status_code = request.query_params.get('status_code')
+        todos = TODO.objects.filter(is_deleted=False)
+
+        if task_id:
+            todos = todos.filter(id=task_id)
+        if id:
+            todos = todos.filter(id=id)
+        if status_code:
+            if status_code in STATUS_CODE:
+                is_completed = (status_code == 'COMPLETED')
+                todos = todos.filter(is_completed=is_completed)
+            else:
+                return Response(
+                    {"status_code": "Status code can be only 'COMPLETED' or 'INCOMPLETE'"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
         paginator = CustomPageNumberPagination()
-        paginated_todo = paginator.paginate_queryset(todo, request)
-        serializedData = TodoSerializer(paginated_todo, many=True)
-        return paginator.get_paginated_response(serializedData.data)
+        paginated_todos = paginator.paginate_queryset(todos, request)
+        serialized_data = TodoSerializer(paginated_todos, many=True)
+
+        return paginator.get_paginated_response(serialized_data.data)
 
     def post(self, request):
         serializedData = TodoSerializer(data=request.data)
